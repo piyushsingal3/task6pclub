@@ -1,0 +1,14 @@
+body{
+  
+    background-image: url(./lakes.jpg) ;
+    background-size: cover;
+    background-blend-mode: inherit;
+    width: 1000px;
+  }
+  .login{
+  font-size: 30px;
+  margin-bottom: 10px;
+  font: 700 ;
+  
+  
+  }
