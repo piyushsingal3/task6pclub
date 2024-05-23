@@ -1,70 +1,14 @@
-# Getting Started with Create React App
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+I have made a attendance app which marks attendance using facial recognition api .In this I have used React ,Go ,Gin, Mongodb and face++ api to compare images
+#How to run#
+1.	First you have to clone this repository on your laptop  make sure you have installed and set up node golang and mongodb
+2.	Then first run command (npm start) that will run your frontend on local host:3000 then go to backend folder and then run command(go run main.go) it will run your backend on localhost:9000
+3.	Then as you don’t have an admin you will have to create a admin using postman or other services .You are creating a admin using postman because you have to create admin once you don’t have to create a admin on frontend  so admin will not created on frontend.
+4.	Now to create a admin you have to make a post request to http://localhost:9000/admin/signup in the body of request you have to write email and password in json format now your admin will be created.
+5.	Now you can open your localhost:3000 in which you will find login as admin page first in which you have to fill the admin details .then you will be directed to admin dashboard it will not be showing any user now , to create a user on the left side dashboard you can click create user then you will be redirected to create user where you can create a user with image
+6.	Now you can click logout and you will see a login as user button on bottom click that and then login as user
+7.	Till now it will be showing no attendance you can mark your attendance by clicking mark attendance on dashboard which clicks your picture and marks attendance for today it picture matches .
+8.	On user dashboard you can see user profile also
+This was the whole process of running
+#Explanation of code#
+1.You will see a backend folder in which I have my whole backend .it contains main.go which is the entry point of my backend and it runs my backend then you will see handlers.go which contains all my handler function for my routes then you can see middleware.go it is basically authentication middleware for authenticated routes .helper.go contains function to generate refdresh tokens.server.go contains function to open connection with mongodb and at the lest server.go contains all the routes
+2.except the backend named folder is my frontend in src you can find my components folder which contains all the pages and app.js is the main entrypoint of my frontend
