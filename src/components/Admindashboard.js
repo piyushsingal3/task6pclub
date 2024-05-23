@@ -41,7 +41,6 @@ const handleLogout = () => {
                 <h2>Dashboard</h2>
                 <ul>
                     <li>Home</li>
-                    <li>Users list</li>
                     <li onClick={handlecreate}>Create Users</li>
                     <li onClick={handleLogout}>Log Out</li>
                 </ul>
