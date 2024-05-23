@@ -11,13 +11,13 @@ import (
 )
 
 func Performserver(m *store.MongoStore) {
-
+	//gin is used as web framework
 	router := gin.Default()
-	//router.Use(cors.Default())
+	//here i haven't used cors as there is difficulty in including header in token
 	router.Use(func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, token") // Include 'token' header
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, token") // Now token can be included as header
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(http.StatusOK)
 			return
@@ -29,6 +29,7 @@ func Performserver(m *store.MongoStore) {
 		handlers.SignUp(c, m)
 
 	})
+	//This route can be need to create a admin if needed so i have commented it out
 	// router.POST("/admin/signup", func(c *gin.Context) {
 	// 	handlers.SignUpAdmin(c, m)
 
@@ -44,6 +45,7 @@ func Performserver(m *store.MongoStore) {
 	router.POST("/markattendance", func(c *gin.Context) {
 		handlers.InsertAttendance(c, m)
 	})
+	//Routes after this are authenticated
 	router.Use(middleware.Authentication())
 	router.POST("/admin/userslist", func(c *gin.Context) {
 		handlers.GetUsers(c, m)
@@ -54,12 +56,12 @@ func Performserver(m *store.MongoStore) {
 
 	})
 
-	// Open connection with MongoDB
+	// It opens the connection with MongoDB local database
 	if err := m.OpenConnectionWithMongoDB("mongodb://localhost:27017", "Attendance-app"); err != nil {
 		log.Fatalf("Failed to open connection with MongoDB: %v", err)
 	}
 
-	//runs the server with localhost
+	//runs the server on local host:9000
 	if err := router.Run(":9000"); err != nil {
 		log.Fatalf("Failed to run the server: %v", err)
 

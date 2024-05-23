@@ -16,7 +16,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// SignedDetails
+// signed details structure
 type SignedDetails struct {
 	Email  string
 	RollNo string
@@ -26,7 +26,7 @@ type SignedDetails struct {
 
 var SECRET_KEY string = os.Getenv("SECRET_KEY")
 
-// GenerateAllTokens generates both teh detailed token and refresh token
+// Generates all token for user detailed and refreshed one
 func GenerateAllTokens(email string, rollno string) (signedToken string, signedRefreshToken string, err error) {
 	claims := &SignedDetails{
 		Email:  email,
@@ -53,6 +53,8 @@ func GenerateAllTokens(email string, rollno string) (signedToken string, signedR
 
 	return token, refreshToken, err
 }
+
+// This func. generates token specially for admin like detailed and refreshed token
 func GenerateAdminTokens(email string) (signedToken string, signedRefreshToken string, err error) {
 	claims := &SignedDetails{
 		Email: email,
@@ -79,7 +81,7 @@ func GenerateAdminTokens(email string) (signedToken string, signedRefreshToken s
 	return token, refreshToken, err
 }
 
-// ValidateToken validates the jwt token
+// This func. validates the jwt token
 func ValidateToken(signedToken string) (claims *SignedDetails, msg string) {
 	token, err := jwt.ParseWithClaims(
 		signedToken,
@@ -110,7 +112,7 @@ func ValidateToken(signedToken string) (claims *SignedDetails, msg string) {
 	return claims, msg
 }
 
-// UpdateAllTokens renews the user tokens when they login
+// This function updates the user token when they login
 func UpdateAllTokens(signedToken string, signedRefreshToken string, rollno string, m *store.MongoStore) {
 	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 
@@ -142,6 +144,8 @@ func UpdateAllTokens(signedToken string, signedRefreshToken string, rollno strin
 
 	return
 }
+
+// This function updates the admin token when admin logins
 func UpdateAdminTokens(signedToken string, signedRefreshToken string, email string, m *store.MongoStore) {
 	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 

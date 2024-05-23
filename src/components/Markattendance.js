@@ -4,17 +4,18 @@ import styles from "./Markattendance.css";
 import React, { useCallback, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 
 const API_KEY = "ZNoMmPcy7VxEqFNNB9jSE8TCPqg0Ntwr";
 const API_SECRET = "ah7Gwk9k92O3qGS0cnzb_6CNvTkUOLdN";
-const COMPARE_URL = "https://api-us.faceplusplus.com/facepp/v3/compare";
+const CompareFaceAPI = "https://api-us.faceplusplus.com/facepp/v3/compare";
 
 export default function MarkAttendance({name,image,email,rollno}) {
   const [img, setImg] = useState(null);
   const [comparisonResult, setComparisonResult] = useState(null);
   const webcamRef = useRef(null);
-
+const navigate =useNavigate();
   const capture = useCallback(() => {
     const imageSrc = webcamRef.current.getScreenshot();
     setImg(imageSrc);
@@ -28,7 +29,7 @@ export default function MarkAttendance({name,image,email,rollno}) {
     formData.append("image_base64_2", image.replace(/^data:image\/\w+;base64,/, ""));
 
     try {
-      const response = await axios.post(COMPARE_URL, formData, {
+      const response = await axios.post(CompareFaceAPI, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       return response.data;
@@ -54,13 +55,15 @@ export default function MarkAttendance({name,image,email,rollno}) {
             status: "Present",
         });
         if (response.status === 200) {
-            alert('Attendance marked successfully!');
+            alert('Attendance marked successfully!.Click here to go to dashboard again');
+            navigate("/user/dashboard")
         }
     } catch (error) {
        
         if (error.response) {
             if (error.response.status === 500) {
-                alert('Attendance already marked.');
+                alert('Attendance already marked.Click here to go to dashboard again');
+                navigate("/user/dashboard")
             } else {
                 alert('An error occurred while marking attendance.');
             }

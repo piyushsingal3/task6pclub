@@ -32,7 +32,7 @@ const handleuserclick=(email)=>{
 }
 const handleLogout = () => {
     handlelogout();
-    navigate('/user/login');
+    navigate('/admin');
   };
 
     return (

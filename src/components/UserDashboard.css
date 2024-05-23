@@ -1,25 +1,17 @@
-body {
 
-
-  
-    background-size: cover;
-    background-blend-mode: inherit;
-  }
   .hello{
     background-color: white !important;
 
   }
   .sidebar ul {
-    list-style: none;
+    list-style:disc;
     width: 100%;
     height: 100%;
-    padding: 0;
   }
   
   .sidebar ul li {
     padding: 15px 20px;
     cursor: pointer;
-    transition: background 0.3s;
   }
   
   .sidebar ul li:hover {

@@ -21,7 +21,7 @@ import (
 
 var validate = validator.New()
 
-// hashes the password
+// this function hashes the password
 func HashPassword(password string) string {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	if err != nil {
@@ -31,6 +31,8 @@ func HashPassword(password string) string {
 
 	return string(bytes)
 }
+
+// User creation handler which saves password by hashing and saves image in base64 format also checks if image is in base64 format
 func SignUp(c *gin.Context, m *store.MongoStore) {
 	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 	var user models.Users
@@ -102,6 +104,8 @@ func SignUp(c *gin.Context, m *store.MongoStore) {
 
 }
 
+//This is the function of creation of admin i have conmmented it out but if we need to create a admin we can use this
+
 // func SignUpAdmin(c *gin.Context, m *store.MongoStore) {
 // 	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 // 	var admin models.Admin
@@ -153,6 +157,8 @@ func SignUp(c *gin.Context, m *store.MongoStore) {
 // 	c.JSON(http.StatusOK, resultInsertionNumber)
 
 // }
+
+// This function is used to verify the password while logging in
 func VerifyPassword(userPassword string, providedPassword string) (bool, string) {
 	err := bcrypt.CompareHashAndPassword([]byte(providedPassword), []byte(userPassword))
 	check := true
@@ -165,6 +171,9 @@ func VerifyPassword(userPassword string, providedPassword string) (bool, string)
 
 	return check, msg
 }
+
+// This function is used for User login it first finds user with entered email then checks password with verify password function
+// and then refreshes the token
 func Login(c *gin.Context, m *store.MongoStore) {
 
 	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
@@ -203,6 +212,8 @@ func Login(c *gin.Context, m *store.MongoStore) {
 	c.JSON(http.StatusOK, foundUser)
 
 }
+
+// This function is similar as login it just handles login of admin
 func LoginAdmin(c *gin.Context, m *store.MongoStore) {
 
 	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
@@ -241,11 +252,8 @@ func LoginAdmin(c *gin.Context, m *store.MongoStore) {
 	c.JSON(http.StatusOK, foundAdmin)
 
 }
-func Auth(c *gin.Context, m *store.MongoStore) {
 
-	c.JSON(http.StatusOK, "Done")
-
-}
+// This function marks the attendance after image detection it also checks that attendance haad been marked or not
 func InsertAttendance(c *gin.Context, m *store.MongoStore) {
 	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 	var attendance models.Attendance
@@ -259,7 +267,6 @@ func InsertAttendance(c *gin.Context, m *store.MongoStore) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": validationErr.Error()})
 		return
 	}
-	log.Printf("Checking for existing attendance: email=%s, date=%s", attendance.UserEmail, attendance.Date)
 
 	count, err := m.AttendanceCollection.CountDocuments(ctx, bson.M{
 		"$and": bson.A{
@@ -292,6 +299,8 @@ func InsertAttendance(c *gin.Context, m *store.MongoStore) {
 	c.JSON(http.StatusOK, resultInsertionNumber)
 
 }
+
+// This handles getting attendance of a particular user
 func GetUsersAttendance(c *gin.Context, m *store.MongoStore) {
 	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
@@ -305,36 +314,37 @@ func GetUsersAttendance(c *gin.Context, m *store.MongoStore) {
 	var foundUserAttendances []models.Attendance
 	cursor, err := m.AttendanceCollection.Find(ctx, bson.M{"useremail": userattendance.UserEmail})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "error finding documents: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "error finding attendance with this user: " + err.Error()})
 		return
 	}
 	defer cursor.Close(ctx)
 	for cursor.Next(context.Background()) {
 		var foundUserAttendance models.Attendance
 		if err := cursor.Decode(&foundUserAttendance); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "error finding documents: " + err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "error finding attendance: " + err.Error()})
 			return
 		}
 		foundUserAttendances = append(foundUserAttendances, foundUserAttendance)
 	}
 
 	if err := cursor.Err(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "error finding documents: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "error finding attendances: " + err.Error()})
 		return
 	}
 	if err := cursor.All(ctx, &foundUserAttendances); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "error decoding results: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "error decoding all attendance: " + err.Error()})
 		return
 	}
 
 	if len(foundUserAttendances) == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "no documents found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "no attendance found"})
 		return
 	}
 
-	// Return the blog entries if found
 	c.JSON(http.StatusOK, foundUserAttendances)
 }
+
+// This function gets details of all users that are in the database
 func GetUsers(c *gin.Context, m *store.MongoStore) {
 	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
@@ -342,33 +352,32 @@ func GetUsers(c *gin.Context, m *store.MongoStore) {
 	var foundUsers []models.Users
 	cursor, err := m.UsersCollection.Find(ctx, bson.M{})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "error finding documents: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "error finding user: " + err.Error()})
 		return
 	}
 	defer cursor.Close(ctx)
 	for cursor.Next(context.Background()) {
 		var foundUser models.Users
 		if err := cursor.Decode(&foundUser); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "error finding documents: " + err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "error finding users: " + err.Error()})
 			return
 		}
 		foundUsers = append(foundUsers, foundUser)
 	}
 
 	if err := cursor.Err(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "error finding documents: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "error finding users: " + err.Error()})
 		return
 	}
 	if err := cursor.All(ctx, &foundUsers); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "error decoding results: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "error decoding users: " + err.Error()})
 		return
 	}
 
 	if len(foundUsers) == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "no documents found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "no users found"})
 		return
 	}
 
-	// Return the blog entries if found
 	c.JSON(http.StatusOK, foundUsers)
 }

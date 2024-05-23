@@ -9,16 +9,19 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// this is basically a structure that contains all the collections
 type MongoStore struct {
 	UsersCollection      *mongo.Collection
 	AdminCollection      *mongo.Collection
 	AttendanceCollection *mongo.Collection
 }
 
+// this creates a new mongo store
 func NewMongoStore() *MongoStore {
 	return &MongoStore{}
 }
 
+// this function opens the connection with mongodb
 func (m *MongoStore) OpenConnectionWithMongoDB(connectionString, databaseName string) error {
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(connectionString))
 	if err != nil {
@@ -37,11 +40,15 @@ func (m *MongoStore) OpenConnectionWithMongoDB(connectionString, databaseName st
 
 	return nil
 }
+
+// this function disconnects connection with mongodb
 func (m *MongoStore) Close() {
 	if err := m.UsersCollection.Database().Client().Disconnect(context.Background()); err != nil {
 		log.Printf("Error disconnecting from MongoDB: %v", err)
 	}
 }
+
+// this function opens particular collection
 func OpenCollection(client *mongo.Client, databaseName string, collectionName string) *mongo.Collection {
 
 	var collection *mongo.Collection = client.Database(databaseName).Collection(collectionName)
