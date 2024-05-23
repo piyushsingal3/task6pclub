@@ -1,3 +1,5 @@
+This readme is not completely visible in preview
+
 I have made a attendance app which marks attendance using facial recognition api .In this I have used React ,Go ,Gin, Mongodb and face++ api to compare images
 #How to run#
 1.	First you have to clone this repository on your laptop  make sure you have installed and set up node golang and mongodb
