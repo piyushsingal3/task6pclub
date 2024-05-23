@@ -104,59 +104,58 @@ func SignUp(c *gin.Context, m *store.MongoStore) {
 
 }
 
-//This is the function of creation of admin i have conmmented it out but if we need to create a admin we can use this
+//This is the function of creation of admin only it will be used to create admin once
 
-// func SignUpAdmin(c *gin.Context, m *store.MongoStore) {
-// 	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
-// 	var admin models.Admin
+func SignUpAdmin(c *gin.Context, m *store.MongoStore) {
+	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+	var admin models.Admin
 
-// 	if err := c.BindJSON(&admin); err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
+	if err := c.BindJSON(&admin); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-// 	validationErr := validate.Struct(admin)
-// 	if validationErr != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": validationErr.Error()})
-// 		return
-// 	}
+	validationErr := validate.Struct(admin)
+	if validationErr != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": validationErr.Error()})
+		return
+	}
 
-// 	count, err := m.AdminCollection.CountDocuments(ctx, bson.M{"email": admin.Email})
-// 	defer cancel()
-// 	if err != nil {
-// 		log.Panic(err)
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "error occured while checking for the email"})
-// 		return
-// 	}
+	count, err := m.AdminCollection.CountDocuments(ctx, bson.M{"email": admin.Email})
+	defer cancel()
+	if err != nil {
+		log.Panic(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "error occured while checking for the email"})
+		return
+	}
 
-// 	password := HashPassword(*admin.Password)
-// 	admin.Password = &password
+	password := HashPassword(*admin.Password)
+	admin.Password = &password
 
-// 	if count > 0 {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "this email already exists"})
-// 		return
+	if count > 0 {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "this email already exists"})
+		return
 
-// 	}
+	}
+	admin.Created_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
+	admin.Updated_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
+	admin.ID = primitive.NewObjectID()
 
-// 	admin.Created_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
-// 	admin.Updated_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
-// 	admin.ID = primitive.NewObjectID()
+	token, refreshToken, _ := helper.GenerateAdminTokens(admin.Email)
+	admin.Token = &token
+	admin.Refresh_token = &refreshToken
 
-// 	token, refreshToken, _ := helper.GenerateAllTokens(admin.Email, admin.RollNo)
-// 	admin.Token = &token
-// 	admin.Refresh_token = &refreshToken
+	resultInsertionNumber, insertErr := m.AdminCollection.InsertOne(ctx, admin)
+	if insertErr != nil {
+		msg := fmt.Sprintf("Admin item was not created")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": msg})
+		return
+	}
+	defer cancel()
 
-// 	resultInsertionNumber, insertErr := m.AdminCollection.InsertOne(ctx, admin)
-// 	if insertErr != nil {
-// 		msg := fmt.Sprintf("Admin item was not created")
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": msg})
-// 		return
-// 	}
-// 	defer cancel()
+	c.JSON(http.StatusOK, resultInsertionNumber)
 
-// 	c.JSON(http.StatusOK, resultInsertionNumber)
-
-// }
+}
 
 // This function is used to verify the password while logging in
 func VerifyPassword(userPassword string, providedPassword string) (bool, string) {

@@ -29,11 +29,11 @@ func Performserver(m *store.MongoStore) {
 		handlers.SignUp(c, m)
 
 	})
-	//This route can be need to create a admin if needed so i have commented it out
-	// router.POST("/admin/signup", func(c *gin.Context) {
-	// 	handlers.SignUpAdmin(c, m)
+	//I have created this route just because a person clonning this git repositery can create a admin using postmanetc
+	router.POST("/admin/signup", func(c *gin.Context) {
+		handlers.SignUpAdmin(c, m)
 
-	// })
+	})
 	router.POST("/admin", func(c *gin.Context) {
 		handlers.LoginAdmin(c, m)
 
